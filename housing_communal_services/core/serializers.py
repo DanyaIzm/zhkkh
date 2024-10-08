@@ -1,19 +1,6 @@
 from rest_framework import serializers
 from .models import *
 
-
-class HouseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = House
-        fields = "__all__"
-
-
-class FlatSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Flat
-        fields = "__all__"
-
-
 class TariffTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = TariffType
@@ -29,6 +16,20 @@ class TariffSerializer(serializers.ModelSerializer):
 class MeterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meter
+        fields = "__all__"
+
+
+class FlatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flat
+        fields = "__all__"
+
+
+class HouseSerializer(serializers.ModelSerializer):
+    flats = FlatSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = House
         fields = "__all__"
 
 
