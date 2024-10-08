@@ -33,6 +33,12 @@ class MeterSerializer(serializers.ModelSerializer):
 
 
 class MeterReadingSerializer(serializers.ModelSerializer):
+    def save(self, **kwargs):
+        try:
+            return super().save(**kwargs)
+        except ValidationError as e:
+            raise serializers.ValidationError(e.messages)
+    
     class Meta:
         model = MeterReading
         fields = "__all__"

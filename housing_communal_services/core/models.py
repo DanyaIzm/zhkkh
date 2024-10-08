@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import Iterable
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -85,10 +86,14 @@ class MeterReading(models.Model):
     def clean(self) -> None:
         current_date = datetime.now()
         
-        meter_reading_date = datetime(year=self.year, month=self.month)
+        meter_reading_date = datetime(year=self.year, month=self.month, day=1)
         
         if meter_reading_date > current_date:
             raise ValidationError("Дата показания не может быть больше текущего месяца")
+    
+    def save(self, force_insert: bool = ..., force_update: bool = ..., using: str | None = ..., update_fields: Iterable[str] | None = ...) -> None:
+        self.clean()
+        return super().save(force_insert, force_update, using, update_fields)
 
     class Meta:
         verbose_name = "Показания счётчика"
