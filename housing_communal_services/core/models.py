@@ -24,7 +24,7 @@ class House(models.Model):
 class Flat(models.Model):
     """Модель квартиры"""
     # используем CharField, так как могут быть специфичные номера квартир (110/1 или 110A и подобные)
-    number = models.CharField(verbose_name="Номер", max_length=128, unique=True)
+    number = models.CharField(verbose_name="Номер", max_length=128)
     house = models.ForeignKey(House, verbose_name="Дом", related_name="flats", on_delete=models.CASCADE)
     
     def __str__(self) -> str:
@@ -33,6 +33,7 @@ class Flat(models.Model):
     class Meta:
         verbose_name = "Квартира"
         verbose_name_plural = "Квартиры"
+        unique_together = ["house", "number"]
 
 
 class TariffType(models.Model):
