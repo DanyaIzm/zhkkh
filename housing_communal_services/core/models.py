@@ -66,7 +66,7 @@ class Meter(models.Model):
     tariff = models.ForeignKey(Tariff, verbose_name="Тариф", on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f"Счётчик {self.tariff.tarrif_type}({self.tariff.price_per_unit}) в {self.flat}"
+        return f"Счётчик {self.tariff.tariff_type}({self.tariff.price_per_unit}) в {self.flat}"
 
     class Meta:
         verbose_name = "Счётчик"
