@@ -3,13 +3,15 @@ from core.models import *
 from .models import *
 
 
-def generate_billing_report(
-    month: int, year: int, house_id: int, billing_report_id: int
-) -> None:
-    flats = Flat.objects.filter(house_id=house_id).prefetch_related(
+def generate_billing_report(billing_report_id: int) -> None:
+    billing_report = BillingReport.objects.get(id=billing_report_id)
+
+    flats = Flat.objects.filter(house_id=billing_report.house.id).prefetch_related(
         Prefetch(
             "meters__readings",
-            queryset=MeterReading.objects.filter(month=month, year=year),
+            queryset=MeterReading.objects.filter(
+                month=billing_report.month, year=billing_report.year
+            ),
         )
     )
 
@@ -31,14 +33,13 @@ def generate_billing_report(
         total_billing_price += flat_billing_price
 
         MonthlyBill.objects.create(
-            month=month,
-            year=year,
+            month=billing_report.month,
+            year=billing_report.year,
             price=flat_billing_price,
             flat=flat,
-            billing_report_id=billing_report_id,
+            billing_report_id=billing_report.id,
         )
 
-    BillingReport.objects.filter(pk=billing_report_id).update(
-        status=BillGenerationStatus.FINISED,
-        total=total_billing_price,
-    )
+    billing_report.status = BillGenerationStatus.FINISED
+    billing_report.total = total_billing_price
+    billing_report.save()

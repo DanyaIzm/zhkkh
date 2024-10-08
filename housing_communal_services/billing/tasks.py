@@ -1,6 +1,8 @@
 from celery import shared_task
+from .services import generate_billing_report
+from .models import BillingReport
 
 
 @shared_task
-def debug_task(aboba):
-    print(f'Absoothinque, {aboba}')
+def generate_billing_report_task(billing_report: BillingReport):
+    generate_billing_report(billing_report)

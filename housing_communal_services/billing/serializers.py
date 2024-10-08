@@ -9,8 +9,8 @@ class MonthlyBillSerializer(serializers.ModelSerializer):
 
 
 class BillingReportSerializer(serializers.ModelSerializer):
-    flat_bill = MonthlyBillSerializer(many=True, read_only=True)
-    
+    monthly_bills = MonthlyBillSerializer(many=True, read_only=True, required=False)
+
     class Meta:
         model = BillingReport
         fields = "__all__"

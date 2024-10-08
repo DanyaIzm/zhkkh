@@ -52,15 +52,14 @@ class ReportGenerationTests(TestCase):
             month=1, year=2001, meter=meter22, value=Decimal("777")
         )
 
-        billing_report = BillingReport.objects.create()
-
-        generate_billing_report(
-            month=1, year=2000, house_id=house.id, billing_report_id=billing_report.id
+        billing_report = BillingReport.objects.create(
+            month=1, year=2000, house_id=house.id
         )
+
+        generate_billing_report(billing_report_id=billing_report.id)
 
         billing_report.refresh_from_db()
 
         # ((50 * 10) + 1 * 20 + 1 * 40) +  ((60 * 10) + 2 * 20 + 2 * 40) = 1280
-
         self.assertEqual(billing_report.status, BillGenerationStatus.FINISED)
         self.assertEqual(billing_report.total, Decimal("1280"))
