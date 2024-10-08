@@ -12,7 +12,6 @@ from django.forms import ValidationError
 class House(models.Model):
     """Модель дома"""
     address = models.CharField(verbose_name="Адрес", max_length=256, unique=True)
-    area = models.DecimalField(verbose_name="Площадь", decimal_places=2, max_digits=16, validators=[MinValueValidator(Decimal("0.01"))])
     
     def __str__(self) -> str:
         return f"Дом: {self.address}"
@@ -27,6 +26,7 @@ class Flat(models.Model):
     # используем CharField, так как могут быть специфичные номера квартир (110/1 или 110A и подобные)
     number = models.CharField(verbose_name="Номер", max_length=128)
     house = models.ForeignKey(House, verbose_name="Дом", related_name="flats", on_delete=models.CASCADE)
+    area = models.DecimalField(verbose_name="Площадь", decimal_places=2, max_digits=16, validators=[MinValueValidator(Decimal("0.01"))])
     
     def __str__(self) -> str:
         return f"{self.house}; Квартира {self.number}"
@@ -79,6 +79,7 @@ class MeterReading(models.Model):
     month = models.IntegerField(verbose_name="Месяц", validators=[MinValueValidator(1), MaxValueValidator(12)])
     year = models.IntegerField(verbose_name="Год")
     meter = models.ForeignKey(Meter, verbose_name="Счётчик", related_name="readings", on_delete=models.CASCADE)
+    value = models.DecimalField(verbose_name="Показания", decimal_places=2, max_digits=16, validators=[MinValueValidator(Decimal("0.01"))])
     
     def __str__(self) -> str:
         return f"{self.month}.{self.year}; {self.meter}"
@@ -91,9 +92,9 @@ class MeterReading(models.Model):
         if meter_reading_date > current_date:
             raise ValidationError("Дата показания не может быть больше текущего месяца")
     
-    def save(self, force_insert: bool = ..., force_update: bool = ..., using: str | None = ..., update_fields: Iterable[str] | None = ...) -> None:
+    def save(self, *args, **kwargs) -> None:
         self.clean()
-        return super().save(force_insert, force_update, using, update_fields)
+        return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Показания счётчика"
