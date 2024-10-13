@@ -10,6 +10,7 @@ from core.models import House
 class BillGenerationStatus(models.TextChoices):
     PENDING = "PENDING", "В процессе"
     FINISED = "FINISHED", "Завершено"
+    ERROR = "ERROR", "Ошибка"
 
 
 class BillingReport(models.Model):

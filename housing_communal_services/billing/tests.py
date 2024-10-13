@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from billing.services import generate_billing_report
 from .models import *
+from .exceptions import AreaTariffDoesNotExistError
 from core.models import *
 from decimal import Decimal
 
@@ -63,3 +64,12 @@ class ReportGenerationTests(TestCase):
         # ((50 * 10) + 1 * 20 + 1 * 40) +  ((60 * 10) + 2 * 20 + 2 * 40) = 1280
         self.assertEqual(billing_report.status, BillGenerationStatus.FINISED)
         self.assertEqual(billing_report.total, Decimal("1280"))
+
+    def test_area_tarrif_does_not_exist(self):
+        house = House.objects.create(address="123")
+        billing_report = BillingReport.objects.create(
+            month=1, year=2000, house_id=house.id
+        )
+
+        with self.assertRaises(AreaTariffDoesNotExistError):
+            generate_billing_report(billing_report_id=billing_report.id)

@@ -1,8 +1,8 @@
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 from .views import *
 
 
-core_router = DefaultRouter()
+core_router = SimpleRouter()
 
 core_router.register("houses", HouseViewSet)
 core_router.register("flats", FlatViewSet)
