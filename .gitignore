@@ -2,4 +2,4 @@ venv
 
 __pycache__
 
-housing_communal_services/db.sqlite3
+db.sqlite3

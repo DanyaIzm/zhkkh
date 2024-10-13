@@ -3,3 +3,42 @@ services:
     image: redis:7.4.1
     ports:
       - 6379:6379
+  database:
+    image: postgres:17.0-alpine
+    environment:
+      POSTGRES_DB: housing_communal_services
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - 5432:5432
+  migrations:
+    build: "./housing_communal_services"
+    volumes:
+      - ./housing_communal_services/:/app/
+    command: bash -c "python manage.py migrate && python manage.py loaddata dump_data.json"
+    depends_on:
+      - database
+    env_file:
+      - "./housing_communal_services/.env"
+  application:
+    build: "./housing_communal_services"
+    volumes:
+      - ./housing_communal_services/:/app/
+    ports:
+      - 8000:8000
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - database
+      - migrations
+      - redis
+    env_file:
+      - "./housing_communal_services/.env"
+  celery-worker:
+    build: "./housing_communal_services"
+    volumes:
+      - ./housing_communal_services/:/app/
+    command: celery -A housing_communal_services worker -l INFO
+    depends_on:
+      - redis
+    env_file:
+      - "./housing_communal_services/.env"
